@@ -1,32 +1,37 @@
+#### Description
+
 List secrets from 1Password as `secret://` references.
 
-If *vault* is not provided, secrets from all vaults are listed.
+- **Vault filtering** — use `--vault` to restrict results to a single vault. If omitted, secrets from all vaults are listed.
+- **Field inspection** — use `--withFields true` to display the field names available on each item.
+
+#### Usage
 
 ```bash
-> aux4 secret 1password list
+aux4 secret 1password list [--vault <name>] [--withFields <true|false>]
 ```
+
+--vault        The vault to list secrets from (default: all vaults)
+--withFields   Include field names for each item (default: false)
+
+#### Example
+
+```bash
+aux4 secret 1password list --vault Personal
 ```
+
+```text
 secret://1password/Personal/GitHub
 secret://1password/Personal/Gmail
-secret://1password/Work/AWS
 ```
 
-Filter by vault:
-
-```bash
-> aux4 secret 1password list --vault Personal
-```
-```
-secret://1password/Personal/GitHub
-secret://1password/Personal/Gmail
-```
-
-Include field names for each item:
+With field names:
 
 ```bash
-> aux4 secret 1password list --vault Personal --withFields true
+aux4 secret 1password list --vault Personal --withFields true
 ```
-```
+
+```text
 secret://1password/Personal/GitHub
   fields: username, password
 

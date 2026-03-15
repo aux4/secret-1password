@@ -29,7 +29,7 @@ concurrency:
 
 jobs:
   publish:
-    uses: aux4/aux4/.github/workflows/publish-package.yml@main
+    uses: aux4/aux4/.github/workflows/publish-package.yml@github-actions
     with:
       package_name: secret-1password
       package_scope: aux4
