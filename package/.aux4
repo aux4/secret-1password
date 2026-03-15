@@ -98,7 +98,7 @@
           "execute": [
             "set:vault_name=!echo '${ref}' | cut -d'/' -f4",
             "set:item_name=!echo '${ref}' | cut -d'/' -f5-",
-            "set:result=!op item get '${item_name}' --vault '${vault_name}' --fields '${fields}' --format json | jq '[.[] | {(.label): .value}] | add'",
+            "set:result=!op item get '${item_name}' --vault '${vault_name}' --fields '${fields}' --format json | jq '[., empty] | flatten | [.[] | {(.label): .value}] | add'",
             "if(otp==true) && echo '${result}' | jq --arg otp \"$(op item get '${item_name}' --vault '${vault_name}' --otp)\" '. + {\"otp\": $otp}' || echo '${result}'"
           ],
           "help": {
