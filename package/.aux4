@@ -1,0 +1,182 @@
+{
+  "scope": "aux4",
+  "name": "secret-1password",
+  "version": "0.1.0",
+  "description": "1Password secret manager for aux4",
+  "license": "Apache-2.0",
+  "tags": [
+    "aux4",
+    "secret",
+    "1password",
+    "password",
+    "credentials"
+  ],
+  "profiles": [
+    {
+      "name": "main",
+      "commands": [
+        {
+          "name": "secret",
+          "execute": [
+            "profile:secret"
+          ],
+          "help": {
+            "text": "Secret manager"
+          }
+        }
+      ]
+    },
+    {
+      "name": "secret",
+      "commands": [
+        {
+          "name": "1password",
+          "execute": [
+            "profile:secret:1password"
+          ],
+          "help": {
+            "text": "1Password secret manager"
+          }
+        }
+      ]
+    },
+    {
+      "name": "secret:1password",
+      "commands": [
+        {
+          "name": "list",
+          "execute": [
+            "nout:if [ -n \"${vault}\" ]; then echo \"--vault ${vault}\"; else echo \"\"; fi",
+            "set:vaultFlag=${response}",
+            "if(withFields==true) && op item list ${vaultFlag} --format json | jq -c '.[]' | while IFS= read -r item; do title=$(echo \"$item\" | jq -r '.title'); vname=$(echo \"$item\" | jq -r '.vault.name'); id=$(echo \"$item\" | jq -r '.id'); echo \"secret://1password/$vname/$title\"; fields=$(op item get \"$id\" --vault \"$vname\" --format json | jq -r '[.fields[] | select(.label != \"\" and .label != null) | .label] | join(\", \")'); echo \"  fields: $fields\"; echo; done || op item list ${vaultFlag} --format json | jq -r '.[] | \"secret://1password/\\(.vault.name)/\\(.title)\"'"
+          ],
+          "help": {
+            "text": "List secrets from 1Password",
+            "variables": [
+              {
+                "name": "vault",
+                "text": "The vault to list secrets from",
+                "default": ""
+              },
+              {
+                "name": "withFields",
+                "text": "Include field names for each item",
+                "default": "false"
+              }
+            ]
+          }
+        },
+        {
+          "name": "search",
+          "execute": [
+            "nout:if [ -n \"${vault}\" ]; then echo \"--vault ${vault}\"; else echo \"\"; fi",
+            "set:vaultFlag=${response}",
+            "if(withFields==true) && op item list ${vaultFlag} --format json | jq -c --arg q \"${query}\" '[.[] | select(.title | test($q; \"i\"))] | .[]' | while IFS= read -r item; do title=$(echo \"$item\" | jq -r '.title'); vname=$(echo \"$item\" | jq -r '.vault.name'); id=$(echo \"$item\" | jq -r '.id'); echo \"secret://1password/$vname/$title\"; fields=$(op item get \"$id\" --vault \"$vname\" --format json | jq -r '[.fields[] | select(.label != \"\" and .label != null) | .label] | join(\", \")'); echo \"  fields: $fields\"; echo; done || op item list ${vaultFlag} --format json | jq -r --arg q \"${query}\" '[.[] | select(.title | test($q; \"i\"))] | .[] | \"secret://1password/\\(.vault.name)/\\(.title)\"'"
+          ],
+          "help": {
+            "text": "Search secrets in 1Password",
+            "variables": [
+              {
+                "name": "query",
+                "text": "The search query"
+              },
+              {
+                "name": "vault",
+                "text": "The vault to search in",
+                "default": ""
+              },
+              {
+                "name": "withFields",
+                "text": "Include field names for each item",
+                "default": "false"
+              }
+            ]
+          }
+        },
+        {
+          "name": "get",
+          "execute": [
+            "set:vault_name=!echo '${ref}' | cut -d'/' -f4",
+            "set:item_name=!echo '${ref}' | cut -d'/' -f5-",
+            "set:result=!op item get '${item_name}' --vault '${vault_name}' --fields '${fields}' --format json | jq '[.[] | {(.label): .value}] | add'",
+            "if(otp==true) && echo '${result}' | jq --arg otp \"$(op item get '${item_name}' --vault '${vault_name}' --otp)\" '. + {\"otp\": $otp}' || echo '${result}'"
+          ],
+          "help": {
+            "text": "Get secret fields from 1Password",
+            "variables": [
+              {
+                "name": "ref",
+                "text": "The secret reference (e.g., secret://1password/Personal/GitHub)"
+              },
+              {
+                "name": "fields",
+                "text": "Comma-separated field names to retrieve (e.g., username,password)"
+              },
+              {
+                "name": "otp",
+                "text": "Include one-time password",
+                "default": "false"
+              }
+            ]
+          }
+        },
+        {
+          "name": "create",
+          "execute": [
+            "set:field_args=!echo '${fields}' | tr ',' ' '",
+            "nout:op item create --category '${category}' --title '${item}' --vault '${vault}' ${field_args}",
+            "echo secret://1password/${vault}/${item}"
+          ],
+          "help": {
+            "text": "Create a new secret in 1Password",
+            "variables": [
+              {
+                "name": "vault",
+                "text": "The vault to create the secret in"
+              },
+              {
+                "name": "item",
+                "text": "The item title"
+              },
+              {
+                "name": "fields",
+                "text": "Comma-separated field assignments (e.g., username=john,password=abc123)"
+              },
+              {
+                "name": "category",
+                "text": "The item category",
+                "default": "Login"
+              }
+            ]
+          }
+        },
+        {
+          "name": "set",
+          "execute": [
+            "set:vault_name=!echo '${ref}' | cut -d'/' -f4",
+            "set:item_name=!echo '${ref}' | cut -d'/' -f5-",
+            "nout:op item edit '${item_name}' --vault '${vault_name}' '${field}=${value}'",
+            "echo secret://1password/${vault_name}/${item_name} updated"
+          ],
+          "help": {
+            "text": "Update a secret field in 1Password",
+            "variables": [
+              {
+                "name": "ref",
+                "text": "The secret reference (e.g., secret://1password/Personal/GitHub)"
+              },
+              {
+                "name": "field",
+                "text": "The field name to update"
+              },
+              {
+                "name": "value",
+                "text": "The new value"
+              }
+            ]
+          }
+        }
+      ]
+    }
+  ]
+}
