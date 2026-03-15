@@ -1,7 +1,7 @@
 {
   "scope": "aux4",
   "name": "secret-1password",
-  "version": "0.1.2",
+  "version": "0.1.3",
   "description": "1Password secret manager for aux4",
   "license": "Apache-2.0",
   "tags": [
@@ -12,7 +12,10 @@
     "credentials"
   ],
   "system": [
-    ["test:op --version", "brew:1password-cli"]
+    [
+      "test:op --version",
+      "brew:1password-cli"
+    ]
   ],
   "profiles": [
     {
