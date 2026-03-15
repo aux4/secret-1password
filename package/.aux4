@@ -11,6 +11,9 @@
     "password",
     "credentials"
   ],
+  "system": [
+    ["test:op --version", "brew:1password-cli"]
+  ],
   "profiles": [
     {
       "name": "main",
@@ -96,8 +99,8 @@
         {
           "name": "get",
           "execute": [
-            "set:vault_name=!echo '${ref}' | cut -d'/' -f4",
-            "set:item_name=!echo '${ref}' | cut -d'/' -f5-",
+            "set:vault_name=!echo '${ref}' | cut -d'/' -f1",
+            "set:item_name=!echo '${ref}' | cut -d'/' -f2-",
             "set:result=!op item get '${item_name}' --vault '${vault_name}' --fields '${fields}' --format json | jq '[., empty] | flatten | [.[] | {(.label): .value}] | add'",
             "if(otp==true) && echo '${result}' | jq --arg otp \"$(op item get '${item_name}' --vault '${vault_name}' --otp)\" '. + {\"otp\": $otp}' || echo '${result}'"
           ],
@@ -106,7 +109,7 @@
             "variables": [
               {
                 "name": "ref",
-                "text": "The secret reference (e.g., secret://1password/Personal/GitHub)"
+                "text": "The secret reference (e.g., Vault/ItemName)"
               },
               {
                 "name": "fields",
@@ -153,17 +156,17 @@
         {
           "name": "set",
           "execute": [
-            "set:vault_name=!echo '${ref}' | cut -d'/' -f4",
-            "set:item_name=!echo '${ref}' | cut -d'/' -f5-",
+            "set:vault_name=!echo '${ref}' | cut -d'/' -f1",
+            "set:item_name=!echo '${ref}' | cut -d'/' -f2-",
             "nout:op item edit '${item_name}' --vault '${vault_name}' '${field}=${value}'",
-            "echo secret://1password/${vault_name}/${item_name} updated"
+            "echo ${ref} updated"
           ],
           "help": {
             "text": "Update a secret field in 1Password",
             "variables": [
               {
                 "name": "ref",
-                "text": "The secret reference (e.g., secret://1password/Personal/GitHub)"
+                "text": "The secret reference (e.g., Personal/GitHub)"
               },
               {
                 "name": "field",

@@ -5,7 +5,7 @@
 ### should return field values as JSON
 
 ```execute
-aux4 secret 1password get --ref "secret://1password/Personal/Test" --fields "username,password"
+aux4 secret 1password get --ref "Fake/Fake Credentials" --fields "username,password"
 ```
 
 ```expect
@@ -16,14 +16,14 @@ aux4 secret 1password get --ref "secret://1password/Personal/Test" --fields "use
 "password":
 ```
 
-## get secret fields with otp
+## get single field
 
-### should return field values with otp
+### should return single field value as JSON
 
 ```execute
-aux4 secret 1password get --ref "secret://1password/Personal/Test" --fields "username,password" --otp true
+aux4 secret 1password get --ref "Fake/Fake Credentials" --fields "username"
 ```
 
 ```expect
-"otp":
+"username":
 ```

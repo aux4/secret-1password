@@ -10,22 +10,29 @@ aux4 aux4 pkger install aux4/secret-1password
 
 ## Prerequisites
 
-- [1Password CLI](https://developer.1password.com/docs/cli/) (`op`) installed and authenticated
+- [1Password CLI](https://developer.1password.com/docs/cli/) (`op`) installed and authenticated (auto-installed via `brew` on macOS)
 - `jq` installed
 
 ## Quick Start
 
 ```bash
 aux4 secret 1password list --vault Personal
-aux4 secret 1password get --ref "secret://1password/Personal/GitHub" --fields "username,password"
+aux4 secret 1password get --ref "Personal/GitHub" --fields "username,password"
 ```
 
 ## Reference Format
 
-All commands use `secret://` references to identify items:
+The `--ref` parameter uses a simple `<vault>/<item>` path:
 
 ```text
-secret://1password/<vault>/<item>
+Personal/GitHub
+Work/AWS
+```
+
+When used inline by consuming packages (e.g., `aux4/browser`), the full `secret://` URI includes the provider prefix:
+
+```text
+secret://1password/<vault>/<item>/<field>
 ```
 
 ## Commands
@@ -97,7 +104,7 @@ secret://1password/Personal/GitHub
 Get specific fields from a secret as a JSON object.
 
 ```bash
-aux4 secret 1password get --ref "secret://1password/Personal/GitHub" --fields "username,password"
+aux4 secret 1password get --ref "Personal/GitHub" --fields "username,password"
 ```
 
 ```json
@@ -110,7 +117,7 @@ aux4 secret 1password get --ref "secret://1password/Personal/GitHub" --fields "u
 Include the one-time password:
 
 ```bash
-aux4 secret 1password get --ref "secret://1password/Personal/GitHub" --fields "username,password" --otp true
+aux4 secret 1password get --ref "Personal/GitHub" --fields "username,password" --otp true
 ```
 
 ```json
@@ -148,9 +155,9 @@ secret://1password/Personal/API Key
 Update a single field of an existing secret.
 
 ```bash
-aux4 secret 1password set --ref "secret://1password/Personal/GitHub" --field password --value newpass123
+aux4 secret 1password set --ref "Personal/GitHub" --field password --value newpass123
 ```
 
 ```text
-secret://1password/Personal/GitHub updated
+Personal/GitHub updated
 ```

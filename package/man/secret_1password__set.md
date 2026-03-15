@@ -1,23 +1,23 @@
 #### Description
 
-Update a single field of an existing 1Password secret. The `--ref` must be a valid `secret://1password/<vault>/<item>` reference.
+Update a single field of an existing 1Password secret. The `--ref` is the vault and item path (e.g., `Personal/GitHub`).
 
 #### Usage
 
 ```bash
-aux4 secret 1password set --ref <secret-ref> --field <name> --value <new-value>
+aux4 secret 1password set --ref <vault/item> --field <name> --value <new-value>
 ```
 
---ref      The secret reference, e.g. `secret://1password/Personal/GitHub` (required)
+--ref      The secret reference, e.g. `Personal/GitHub` (required)
 --field    The field name to update (required)
 --value    The new value (required)
 
 #### Example
 
 ```bash
-aux4 secret 1password set --ref "secret://1password/Personal/GitHub" --field password --value newpass123
+aux4 secret 1password set --ref "Personal/GitHub" --field password --value newpass123
 ```
 
 ```text
-secret://1password/Personal/GitHub updated
+Personal/GitHub updated
 ```
