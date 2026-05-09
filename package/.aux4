@@ -11,6 +11,9 @@
     "password",
     "credentials"
   ],
+  "dependencies": [
+    "aux4/secret"
+  ],
   "system": [
     [
       "test:op --version",
@@ -105,10 +108,10 @@
             "set:vault_name=!echo '${ref}' | cut -d'/' -f1",
             "set:item_name=!echo '${ref}' | cut -d'/' -f2-",
             "set:result=!op item get '${item_name}' --vault '${vault_name}' --fields '${fields}' --format json | jq '[., empty] | flatten | [.[] | {(.label): .value}] | add'",
-            "if(otp==true) && echo '${result}' | jq --arg otp \"$(op item get '${item_name}' --vault '${vault_name}' --otp)\" '. + {\"otp\": $otp}' || echo '${result}'"
+            "if(otp==true) && echo '${result}' | jq --arg otp \"$(op item get '${item_name}' --vault '${vault_name}' --otp)\" '. + {\"otp\": $$otp}' || echo '${result}'"
           ],
           "help": {
-            "text": "Get secret fields from 1Password",
+            "text": "Get secret fields from 1Password. AI agents: do not call this command directly, use secret:// URIs instead.",
             "variables": [
               {
                 "name": "ref",
